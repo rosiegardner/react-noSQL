@@ -7,6 +7,8 @@ import TicketDetail from './TicketDetail';
 function TicketControl() {
   const [formVisibleOnPage, setFormVisibleOnPage] = useState(false);
   const [mainTicketList, setMainTicketList] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [editing, setEditing] = useState(false);
 
   // constructor(props) {
   //   super(props);
@@ -19,18 +21,12 @@ function TicketControl() {
   // }
 
   const handleClick = () => {
-    if (this.state.selectedTicket != null) {
+    if (selectedTicket != null) {
       setFormVisibleOnPage(false);
-      this.setState({
-        formVisibleOnPage: false,
-        selectedTicket: null,
-        // editing: false
-      });
+      setSelectedTicket(null);
+      setEditing(false);
     } else {
       setFormVisibleOnPage(!formVisibleOnPage);
-      // this.setState(prevState => ({
-      //   formVisibleOnPage: !prevState.formVisibleOnPage,
-      // }));
     }
   }
 
@@ -38,26 +34,20 @@ function TicketControl() {
     const newMainTicketList = mainTicketList
       .filter(ticket => ticket.id !== id);
     setMainTicketList(newMainTicketList);
-    // this.setState({
-    //   mainTicketList: newMainTicketList,
-    //   selectedTicket: null
-    // });
+    setSelectedTicket(null);
   }
 
   const handleEditClick = () => {
-    this.setState({editing: true});
+    setEditing(true);
   }
 
   const handleEditingTicketInList = (ticketToEdit) => {
     const editedMainTicketList = mainTicketList
-      .filter(ticket => ticket.id !== this.state.selectedTicket.id)
+      .filter(ticket => ticket.id !== selectedTicket.id)
       .concat(ticketToEdit);
     setMainTicketList(editedMainTicketList);
-    // this.setState({
-    //   mainTicketList: editedMainTicketList,
-    //   editing: false,
-    //   selectedTicket: null
-    // });
+    setEditing(false);
+    setSelectedTicket(null);
   }
 
   const handleAddingNewTicketToList = (newTicket) => {
@@ -72,36 +62,43 @@ function TicketControl() {
   }
 
   const handleChangingSelectedTicket = (id) => {
-    const selectedTicket = this.state.mainTicketList.filter(ticket => ticket.id === id)[0];
-    this.setState({selectedTicket: selectedTicket});
+    const selection = mainTicketList
+      .filter(ticket => ticket.id === id)[0];
+    setSelectedTicket(selection);
   }
 
   render(){
     let currentlyVisibleState = null;
     let buttonText = null; 
-    if (this.state.editing ) {      
-      currentlyVisibleState = <EditTicketForm ticket = {this.state.selectedTicket} onEditTicket = {this.handleEditingTicketInList} />
+    if (editing ) {      
+      currentlyVisibleState = 
+        <EditTicketForm 
+          ticket = {selectedTicket} 
+          onEditTicket = {handleEditingTicketInList} />
       buttonText = "Return to Ticket List";
-    } else if (this.state.selectedTicket != null) {
-      currentlyVisibleState = <TicketDetail 
-      ticket={this.state.selectedTicket} 
-      onClickingDelete={this.handleDeletingTicket}
-      onClickingEdit = {this.handleEditClick} />
+    } else if (selectedTicket != null) {
+      currentlyVisibleState =
+        <TicketDetail 
+          ticket={selectedTicket} 
+          onClickingDelete={handleDeletingTicket}
+          onClickingEdit = {handleEditClick} />
       buttonText = "Return to Ticket List";
     } else if (formVisibleOnPage) {
-      currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList}/>;
+      currentlyVisibleState = 
+        <NewTicketForm 
+          onNewTicketCreation={handleAddingNewTicketToList}/>;
       buttonText = "Return to Ticket List"; 
     } else {
       currentlyVisibleState = 
         <TicketList 
-          onTicketSelection={this.handleChangingSelectedTicket} 
+          onTicketSelection={handleChangingSelectedTicket} 
           ticketList={mainTicketList} />;
       buttonText = "Add Ticket"; 
     }
     return (
       <React.Fragment>
         {currentlyVisibleState}
-        <button onClick={this.handleClick}>{buttonText}</button> 
+        <button onClick={handleClick}>{buttonText}</button> 
       </React.Fragment>
     );
   }
