@@ -4,17 +4,17 @@ import TicketList from './TicketList';
 import EditTicketForm from './EditTicketForm';
 import TicketDetail from './TicketDetail';
 
-class TicketControl extends React.Component {
+function TicketControl() {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      formVisibleOnPage: false,
-      mainTicketList: [],
-      selectedTicket: null,
-      editing: false
-    };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     formVisibleOnPage: false,
+  //     mainTicketList: [],
+  //     selectedTicket: null,
+  //     editing: false
+  //   };
+  // }
 
   handleClick = () => {
     if (this.state.selectedTicket != null) {
