@@ -4,13 +4,14 @@ import TicketList from './TicketList';
 import EditTicketForm from './EditTicketForm';
 import TicketDetail from './TicketDetail';
 import db from './../firebase.js';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
 
 function TicketControl() {
   const [formVisibleOnPage, setFormVisibleOnPage] = useState(false);
   const [mainTicketList, setMainTicketList] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [error, setError] = useState(null);
 
   // constructor(props) {
   //   super(props);
@@ -21,6 +22,29 @@ function TicketControl() {
   //     editing: false
   //   };
   // }
+
+  useEffect(() => {
+    const unSubscribe = onSnapshot(
+      collection(db, "tickets"),
+      (collectionSnapshot) => {
+        const tickets = [];
+        collectionSnapshot.forEach((doc) => {
+          tickets.push({
+            // ...doc.data(), -> using spread operator 
+            names: doc.data().names,
+            location: doc.data().location,
+            issue: doc.data().issue,
+            id: doc.id 
+          });
+        });
+        setMainTicketList(tickets);
+      },
+        (error) => {
+          setError(error.message);
+        }
+    );
+    return () => unSubscribe();
+  }, []);
   
   const handleClick = () => {
     if (selectedTicket != null) {
@@ -69,7 +93,10 @@ function TicketControl() {
   let currentlyVisibleState = null;
   let buttonText = null; 
 
-  if (editing ) {      
+  if (error) {
+    currentlyVisibleState =
+      <p>There was an Error: {error}</p>
+  }else if (editing) {      
     currentlyVisibleState = 
       <EditTicketForm 
         ticket = {selectedTicket} 
@@ -97,7 +124,7 @@ function TicketControl() {
   return (
     <React.Fragment>
       {currentlyVisibleState}
-      <button onClick={handleClick}>{buttonText}</button> 
+      { error ? null : <button onClick={handleClick}>{buttonText}</button> } 
     </React.Fragment>
   );
   
