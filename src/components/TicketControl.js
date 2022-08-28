@@ -19,7 +19,7 @@ function TicketControl() {
   //     editing: false
   //   };
   // }
-
+  
   const handleClick = () => {
     if (selectedTicket != null) {
       setFormVisibleOnPage(false);
@@ -55,10 +55,6 @@ function TicketControl() {
       .concat(newTicket);
     setMainTicketList(newMainTicketList);
     setFormVisibleOnPage(false)
-    // this.setState({
-    //   mainTicketList: newMainTicketList
-    // });
-    // this.setState({formVisibleOnPage: false});
   }
 
   const handleChangingSelectedTicket = (id) => {
