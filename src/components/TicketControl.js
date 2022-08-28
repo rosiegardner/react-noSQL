@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NewTicketForm from './NewTicketForm';
 import TicketList from './TicketList';
 import EditTicketForm from './EditTicketForm';
 import TicketDetail from './TicketDetail';
 
 function TicketControl() {
+  const [formVisibleOnPage, setFormVisibleOnPage] = useState(false);
 
   // constructor(props) {
   //   super(props);
@@ -18,15 +19,17 @@ function TicketControl() {
 
   handleClick = () => {
     if (this.state.selectedTicket != null) {
+      setFormVisibleOnPage(false);
       this.setState({
         formVisibleOnPage: false,
         selectedTicket: null,
-        editing: false
+        // editing: false
       });
     } else {
-      this.setState(prevState => ({
-        formVisibleOnPage: !prevState.formVisibleOnPage,
-      }));
+      setFormVisibleOnPage(!formVisibleOnPage);
+      // this.setState(prevState => ({
+      //   formVisibleOnPage: !prevState.formVisibleOnPage,
+      // }));
     }
   }
 
@@ -54,9 +57,13 @@ function TicketControl() {
   }
 
   handleAddingNewTicketToList = (newTicket) => {
-    const newMainTicketList = this.state.mainTicketList.concat(newTicket);
-    this.setState({mainTicketList: newMainTicketList});
-    this.setState({formVisibleOnPage: false});
+    const newMainTicketList = this.state.mainTicketList
+      .concat(newTicket);
+    this.setState({
+      mainTicketList: newMainTicketList
+    });
+    // this.setState({formVisibleOnPage: false});
+    setFormVisibleOnPage(false)
   }
 
   handleChangingSelectedTicket = (id) => {
@@ -76,7 +83,7 @@ function TicketControl() {
       onClickingDelete={this.handleDeletingTicket}
       onClickingEdit = {this.handleEditClick} />
       buttonText = "Return to Ticket List";
-    } else if (this.state.formVisibleOnPage) {
+    } else if (formVisibleOnPage) {
       currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList}/>;
       buttonText = "Return to Ticket List"; 
     } else {
