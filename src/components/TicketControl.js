@@ -6,6 +6,7 @@ import TicketDetail from './TicketDetail';
 
 function TicketControl() {
   const [formVisibleOnPage, setFormVisibleOnPage] = useState(false);
+  const [mainTicketList, setMainTicketList] = useState([]);
 
   // constructor(props) {
   //   super(props);
@@ -17,7 +18,7 @@ function TicketControl() {
   //   };
   // }
 
-  handleClick = () => {
+  const handleClick = () => {
     if (this.state.selectedTicket != null) {
       setFormVisibleOnPage(false);
       this.setState({
@@ -33,40 +34,44 @@ function TicketControl() {
     }
   }
 
-  handleDeletingTicket = (id) => {
-    const newMainTicketList = this.state.mainTicketList.filter(ticket => ticket.id !== id);
-    this.setState({
-      mainTicketList: newMainTicketList,
-      selectedTicket: null
-    });
+  const handleDeletingTicket = (id) => {
+    const newMainTicketList = mainTicketList
+      .filter(ticket => ticket.id !== id);
+    setMainTicketList(newMainTicketList);
+    // this.setState({
+    //   mainTicketList: newMainTicketList,
+    //   selectedTicket: null
+    // });
   }
 
-  handleEditClick = () => {
+  const handleEditClick = () => {
     this.setState({editing: true});
   }
 
-  handleEditingTicketInList = (ticketToEdit) => {
-    const editedMainTicketList = this.state.mainTicketList
+  const handleEditingTicketInList = (ticketToEdit) => {
+    const editedMainTicketList = mainTicketList
       .filter(ticket => ticket.id !== this.state.selectedTicket.id)
       .concat(ticketToEdit);
-    this.setState({
-      mainTicketList: editedMainTicketList,
-      editing: false,
-      selectedTicket: null
-    });
+    setMainTicketList(editedMainTicketList);
+    // this.setState({
+    //   mainTicketList: editedMainTicketList,
+    //   editing: false,
+    //   selectedTicket: null
+    // });
   }
 
-  handleAddingNewTicketToList = (newTicket) => {
-    const newMainTicketList = this.state.mainTicketList
+  const handleAddingNewTicketToList = (newTicket) => {
+    const newMainTicketList = mainTicketList
       .concat(newTicket);
-    this.setState({
-      mainTicketList: newMainTicketList
-    });
-    // this.setState({formVisibleOnPage: false});
+    setMainTicketList(newMainTicketList);
     setFormVisibleOnPage(false)
+    // this.setState({
+    //   mainTicketList: newMainTicketList
+    // });
+    // this.setState({formVisibleOnPage: false});
   }
 
-  handleChangingSelectedTicket = (id) => {
+  const handleChangingSelectedTicket = (id) => {
     const selectedTicket = this.state.mainTicketList.filter(ticket => ticket.id === id)[0];
     this.setState({selectedTicket: selectedTicket});
   }
@@ -87,7 +92,10 @@ function TicketControl() {
       currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList}/>;
       buttonText = "Return to Ticket List"; 
     } else {
-      currentlyVisibleState = <TicketList onTicketSelection={this.handleChangingSelectedTicket} ticketList={this.state.mainTicketList} />;
+      currentlyVisibleState = 
+        <TicketList 
+          onTicketSelection={this.handleChangingSelectedTicket} 
+          ticketList={mainTicketList} />;
       buttonText = "Add Ticket"; 
     }
     return (
