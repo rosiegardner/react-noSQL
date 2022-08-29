@@ -74,13 +74,16 @@ function TicketControl() {
     setEditing(true);
   }
 
-  const handleEditingTicketInList = (ticketToEdit) => {
-    const editedMainTicketList = mainTicketList
-      .filter(ticket => ticket.id !== selectedTicket.id)
-      .concat(ticketToEdit);
-    setMainTicketList(editedMainTicketList);
+  const handleEditingTicketInList = async (ticketToEdit) => {
+    // const ticketRef = doc(db, "tickets", ticketToEdit.id);
+    // await updateDoc(ticketRef, ticketToEdit);
+    await updateDoc(doc(db, "tickets", ticketToEdit.id), ticketToEdit);
     setEditing(false);
     setSelectedTicket(null);
+    // const editedMainTicketList = mainTicketList       -> old code.
+    //   .filter(ticket => ticket.id !== selectedTicket.id)
+    //   .concat(ticketToEdit);
+    // setMainTicketList(editedMainTicketList);
   }
 
   const handleChangingSelectedTicket = (id) => {
