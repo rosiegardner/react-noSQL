@@ -63,11 +63,12 @@ function TicketControl() {
     setFormVisibleOnPage(false);
   }
 
-  const handleDeletingTicket = (id) => {
-    const newMainTicketList = mainTicketList
-      .filter(ticket => ticket.id !== id);
-    setMainTicketList(newMainTicketList);
+  const handleDeletingTicket = async (id) => {
+    await deleteDoc(doc(db, "tickets", id));
     setSelectedTicket(null);
+    // const newMainTicketList = mainTicketList      -> old code
+    //   .filter(ticket => ticket.id !== id);
+    // setMainTicketList(newMainTicketList);
   }
 
   const handleEditClick = () => {
