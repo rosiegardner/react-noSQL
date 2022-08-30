@@ -100,7 +100,7 @@ function TicketControl() {
   if (error) {
     currentlyVisibleState =
       <p>There was an Error: {error}</p>
-  }else if (editing) {      
+  } else if (editing) {      
     currentlyVisibleState = 
       <EditTicketForm 
         ticket = {selectedTicket} 
