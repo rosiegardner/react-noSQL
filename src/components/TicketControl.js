@@ -5,6 +5,7 @@ import EditTicketForm from './EditTicketForm';
 import TicketDetail from './TicketDetail';
 import { db, auth } from './../firebase.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { formatDistanceToNow } from 'date-fns';
 
 function TicketControl() {
   const [formVisibleOnPage, setFormVisibleOnPage] = useState(false);
@@ -26,14 +27,19 @@ function TicketControl() {
   useEffect(() => {
     const unSubscribe = onSnapshot(
       collection(db, "tickets"),
-      (collectionSnapshot) => {
+      (querySnapshot) => {
         const tickets = [];
-        collectionSnapshot.forEach((doc) => {
+        querySnapshot.forEach((doc) => {
+          const timeOpen = 
+            doc.get('timeOpen', {serverTimestamps: "estimate"}).toDate();
+          const jsDate = newDate(timeOpen);
           tickets.push({
             // ...doc.data(), -> using spread operator 
             names: doc.data().names,
             location: doc.data().location,
             issue: doc.data().issue,
+            timeOpen: jsDate,
+            formattedWaitTime: formatDistanceToNow(jsDate),
             id: doc.id 
           });
         });
