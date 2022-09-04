@@ -4,7 +4,7 @@ import TicketList from './TicketList';
 import EditTicketForm from './EditTicketForm';
 import TicketDetail from './TicketDetail';
 import { db, auth } from './../firebase.js';
-import { collection, addDoc, doc, updateDoc, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, onSnapshot, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 
 function TicketControl() {
@@ -25,16 +25,19 @@ function TicketControl() {
   // }
 
   useEffect(() => {
-    const unSubscribe = onSnapshot(
+    const queryByTimeStamp = query(
       collection(db, "tickets"),
+      orderBy('timeOpen', 'desc')
+    );
+    const unSubscribe = onSnapshot(
+      queryByTimeStamp,
       (querySnapshot) => {
         const tickets = [];
         querySnapshot.forEach((doc) => {
           const timeOpen = 
             doc.get('timeOpen', {serverTimestamps: "estimate"}).toDate();
-          const jsDate = newDate(timeOpen);
+          const jsDate = new Date(timeOpen);
           tickets.push({
-            // ...doc.data(), -> using spread operator 
             names: doc.data().names,
             location: doc.data().location,
             issue: doc.data().issue,
@@ -51,6 +54,26 @@ function TicketControl() {
     );
     return () => unSubscribe();
   }, []);
+
+  useEffect(() => {
+    function updateTicketElapsedWaitTime() {
+      const newMainTicketList = mainTicketList.map(ticket => {
+        const newFormattedWaitTime = formatDistanceToNow(ticket.timeOpen);
+        return {
+          ...ticket,
+          formattedWaitTime: newFormattedWaitTime
+        };
+      });
+      setMainTicketList(newMainTicketList);
+    }
+
+    const waitTimeUpdateTimer = setInterval(() => 
+      updateTicketElapsedWaitTime(), 6000);
+    
+      return function cleanup() {
+        clearInterval(waitTimeUpdateTimer);
+      }
+    }, [mainTicketList])
   
   const handleClick = () => {
     if (selectedTicket != null) {
